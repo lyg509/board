@@ -15,7 +15,6 @@ public class BoardService {
 
     //글 작성
     public void write(Board board) {
-
         boardRepository.save(board);
     }
 
