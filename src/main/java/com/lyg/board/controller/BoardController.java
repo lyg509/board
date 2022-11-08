@@ -8,6 +8,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Controller
 public class BoardController {
@@ -15,16 +18,20 @@ public class BoardController {
     @Autowired
     private BoardService boardService;
 
-    @GetMapping("/board/write") //localhost:8090/board/write
+    @GetMapping("/board/write") //localhost:8091/board/write
     public String boardWriteForm() {
         return "boardwrite";
     }
 
     @PostMapping("/board/writepro")
-    public String boardWritePro(Board board) {
+    public String boardWritePro(Board board, Model model, MultipartFile file) throws Exception {
 
-        boardService.write(board);
-        return"";
+        boardService.write(board, file);
+
+        model.addAttribute("message", "글 작성이 완료되었습니다.");
+        model.addAttribute("searchUrl", "/board/list");
+
+        return"message";
     }
 
     @GetMapping("/board/list")
@@ -49,13 +56,14 @@ public class BoardController {
     }
 
     @PostMapping("/board/update/{id}")
-    public String boardUpdate(@PathVariable("id") Integer id,Board board) {
+    public String boardUpdate(@PathVariable("id") Integer id,Board board, MultipartFile file) throws IOException {
 
         Board boardTemp = boardService.boardView(id);
         boardTemp.setTitle(board.getTitle());
         boardTemp.setContent(board.getContent());
 
-        boardService.write(boardTemp);
+        boardService.write(boardTemp, file);
+
         return "redirect:/board/list";
     }
 }
